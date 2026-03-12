@@ -4,4 +4,5 @@ include("set_up_tests.jl")
     Aqua.test_all(Splines2; ambiguities=false)
 end
 
+@testset "splines" include("splines.jl")
 @testset "StatsModels" include("statsmodels.jl")
