@@ -12,7 +12,7 @@ mat = [0.0 0.0 0.0
        0.501759 0.386722 -0.172481
        0.418872 0.327383 0.217745
        -0.142857 0.428571 0.714286]
-@test isapprox(ns(collect(0.0:0.2:1.0); df=3), mat; rtol=0.0001)
+@test isapprox(ns(0.0:0.2:1.0; df=3), mat; rtol=0.0001)
 
 # XXX `is` is broken -- this delivers a 4 column value!
 # mat = [ 0.0     0.0     0.0   

@@ -1,6 +1,6 @@
 module Splines2
 
-export ns, ns_, bs, bs_, is, is_, ms, ms_, basis
+export ns, NSplineBasis, bs, bs_, is, is_, ms, ms_, basis
 
 using OffsetArrays
 using LinearAlgebra
@@ -159,13 +159,13 @@ function basis(bs::BSplineBasis{T}, x::T, ders::Int=0) where {T<:Real}
     return vec
 end
 
-function basis(bs::AbstractSplineBasis{T}, x::Array{T,1}, ders::Int=0) where {T<:Real}
+function basis(bs::AbstractSplineBasis{T}, x::AbstractVector{T}, ders::Int=0) where {T<:Real}
     f(xi) = basis(bs, xi, ders)
     return copy(transpose(reduce(hcat, f.(x))))
 end
 
 # utility function for processing the spline arguments
-function spline_args(x::Array{T,1};
+function spline_args(x::AbstractVector{T};
                      boundary_knots::Union{Tuple{T,T},Nothing}=nothing,
                      interior_knots::Union{Array{T,1},Nothing}=nothing,
                      order::Int=4,

@@ -5,14 +5,14 @@ using StatsModels
 
 using StatsModels
 
-Splines2.ns(x, df) = Splines2.ns(x; df, intercept=false)
+Splines2.ns(x, df::Integer) = Splines2.ns(x; df, intercept=false)
 
 const SPLINE_CONTEXT = Any
 
 mutable struct NSplineTerm{T,D} <: AbstractTerm
     const term::T
     const df::D
-    basis::Union{Function,Nothing}
+    basis::Union{NSplineBasis,Nothing}
 end
 
 Base.show(io::IO, p::NSplineTerm) = print(io, "ns($(p.term), $(p.df))")
@@ -38,9 +38,9 @@ end
 function StatsModels.modelcols(p::NSplineTerm{<:ContinuousTerm,<:Integer}, d::NamedTuple)
     col = modelcols(p.term, d)
     if isnothing(p.basis)
-        p.basis = Splines2.ns_(col; df=p.df)
+        p.basis = NSplineBasis(col; p.df)
     end
-    return p.basis(col)
+    return ns(col, p.basis)
 end
 
 StatsModels.terms(p::NSplineTerm) = terms(p.term)
