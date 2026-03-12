@@ -11,6 +11,9 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 [weakdeps]
 StatsModels = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
 
+[extensions]
+Splines2StatsModelsExt = "StatsModels"
+
 [compat]
 Aqua = "0.8"
 GLM = "1.8"
