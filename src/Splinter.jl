@@ -1,4 +1,4 @@
-module Splines2
+module Splinter
 
 export ns, NSplineBasis, bs, bs_, is, is_, ms, ms_, basis
 
