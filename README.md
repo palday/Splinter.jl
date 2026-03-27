@@ -1,20 +1,10 @@
-# Splines2.jl package for regression splines
+# Splinter.jl package for regression splines
 
 A [Julia](https://julialang.org/) package for regression splines. The package currently includes B-splines, natural B-splines, M-splines and I-splines.
 
-## News
-### Version 0.2.0:
-- Mainly bug fixes.
-- A change of behaviour for `Splines2.is_` and `Splines2.is`: `intercept=true` will include a columns of ones, while the default `intercept=false` will keep _all_ of the spline terms, but exclude the column of ones. This behaviour is different to the `splines2` package in R, which will give all of the spline terms for `intercept=TRUE` and drop the first spline term for `intercept=FALSE`.
+This package was forked from [Spline2.jl](https://github.com/mclements/Splines2.jl) and includes a fairly substantial refactoring and restructuring of the code. 
 
-## Installation
-
-The package is registered on JuliaHub. For installation:
-
-``` julia
-using Pkg; Pkg.add("Splines2")
-```
-
+<!-- 
 ## Usage
 
 Exported functions include `Splines2.bs`, `Splines2.ns`, `Splines2.ms` and `Splines2.is`, which provide evaluating spline bases for B-splines, natural B-splines, M-splines and I-splines, respectively. These functions take an `::Array{<:Real,1}` argument and some design information and return the given spline basis. 
@@ -251,3 +241,5 @@ julia> predict(fit2, DataFrames.DataFrame(x=newx)) # unsafe predictions!
 ```
 
 For further details, see the discussion [here](https://discourse.julialang.org/t/safe-predictions-using-formula-and-regression-splines/33057).
+
+-->
