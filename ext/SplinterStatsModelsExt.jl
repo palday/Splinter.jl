@@ -1,11 +1,11 @@
-module Splines2StatsModelsExt
+module SplinterStatsModelsExt
 
-using Splines2
+using Splinter
 using StatsModels
 
 using StatsModels
 
-Splines2.ns(x, df::Integer) = Splines2.ns(x; df, intercept=false)
+Splinter.ns(x, df::Integer) = Splinter.ns(x; df, intercept=false)
 
 const SPLINE_CONTEXT = Any
 

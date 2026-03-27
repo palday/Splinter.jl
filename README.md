@@ -2,14 +2,14 @@
 
 A [Julia](https://julialang.org/) package for regression splines. The package currently includes B-splines, natural B-splines, M-splines and I-splines.
 
-This package was forked from [Spline2.jl](https://github.com/mclements/Splines2.jl) and includes a fairly substantial refactoring and restructuring of the code. 
+This package was forked from [Spline2.jl](https://github.com/mclements/Splinter.jl) and includes a fairly substantial refactoring and restructuring of the code. 
 
 <!-- 
 ## Usage
 
-Exported functions include `Splines2.bs`, `Splines2.ns`, `Splines2.ms` and `Splines2.is`, which provide evaluating spline bases for B-splines, natural B-splines, M-splines and I-splines, respectively. These functions take an `::Array{<:Real,1}` argument and some design information and return the given spline basis. 
+Exported functions include `Splinter.bs`, `Splinter.ns`, `Splinter.ms` and `Splinter.is`, which provide evaluating spline bases for B-splines, natural B-splines, M-splines and I-splines, respectively. These functions take an `::Array{<:Real,1}` argument and some design information and return the given spline basis. 
 
-### Documentation for `Splines2.bs`
+### Documentation for `Splinter.bs`
 
 ``` julia
 bs(x :: Array{T,1}; <keyword arguments>) where T<:Real
@@ -34,7 +34,7 @@ The keyword arguments include one of:
 
 
 
-### Documentation for `Splines2.bs_`
+### Documentation for `Splinter.bs_`
 
 ``` julia
 bs_(x :: Array{T,1}; <keyword arguments>) where T<:Real
@@ -65,7 +65,7 @@ The documentation for the other bases are similar, except that the I-splines do 
 Some short examples are given below.
 
 ``` julia
-julia> using Splines2
+julia> using Splinter
 julia> x = collect(0.0:0.1:1.0);
 julia> bs(x, df=3)
 
@@ -131,11 +131,11 @@ julia> ns(x, boundary_knots=(0.0,1.0), interior_knots=[0.2])
 We also provide functions that return a function for evaluating spline bases with a function signature `(x::Array{T<:Real,1}; ders::Int32 = 0)`. These are useful for "safe" predictions in regression modelling. As an example:
 
 ``` julia
-julia> using Splines2, GLM, Random
+julia> using Splinter, GLM, Random
 julia> Random.seed!(12345);
 julia> x = collect(range(0.0, length=301, stop=2.0*pi));
 julia> y = sin.(x)+randn(length(x)); 
-julia> ns1 = Splines2.ns_(x,df=5,intercept=true); # this is a function
+julia> ns1 = Splinter.ns_(x,df=5,intercept=true); # this is a function
 julia> X = ns1(x);
 julia> fit1 = lm(X,y)
 
@@ -167,13 +167,13 @@ julia> predict(fit1, ns1(newx)) # safe predictions
 ```
 
 
-## Using `Splines2` with `@formula`
+## Using `Splinter` with `@formula`
 
-We provide code below for using the `Splines2` package with `@formula`. Note that these do *not* provide "safe" predictions.
+We provide code below for using the `Splinter` package with `@formula`. Note that these do *not* provide "safe" predictions.
 
 ``` julia
 using StatsModels
-ns(x,df) = Splines2.ns(x,df=df,intercept=true) # assumes intercept
+ns(x,df) = Splinter.ns(x,df=df,intercept=true) # assumes intercept
 const NSPLINE_CONTEXT = Any
 struct NSplineTerm{T,D} <: AbstractTerm
     term::T
@@ -197,7 +197,7 @@ function StatsModels.apply_schema(t::NSplineTerm,
 end
 function StatsModels.modelcols(p::NSplineTerm, d::NamedTuple)
     col = modelcols(p.term, d)
-    Splines2.ns(col, df=p.df,intercept=true)
+    Splinter.ns(col, df=p.df,intercept=true)
 end
 StatsModels.terms(p::NSplineTerm) = terms(p.term)
 StatsModels.termvars(p::NSplineTerm) = StatsModels.termvars(p.term)

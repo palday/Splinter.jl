@@ -1,5 +1,5 @@
 using Aqua
 using GLM
 using StableRNGs
-using Splines2
+using Splinter
 using Test
