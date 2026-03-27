@@ -7,11 +7,10 @@ makedocs(;
          doctest=true,
          checkdocs=:exports,
          warnonly=[:cross_references],
-         format= Documenter.HTML(; edit_link="main"),
-         pages=["index.md", 
+         format=Documenter.HTML(; edit_link="main"),
+         pages=["index.md",
                 "api.md"])
 
-
-deploydocs(; repo="github.com/palday/Splinter.jl.git", 
+deploydocs(; repo="github.com/palday/Splinter.jl.git",
            devbranch="main",
            push_preview=true)

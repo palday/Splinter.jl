@@ -39,12 +39,12 @@ function bs_(x::Array{T,1};
              df::Int=order - 1 + Int(intercept),
              knots::Union{Array{T,1},Nothing}=nothing,
              center::Union{T,Nothing}=nothing) where {T<:Real}
-    (boundary_knots, interior_knots) = spline_args(x, 
+    (boundary_knots, interior_knots) = spline_args(x,
                                                    boundary_knots,
                                                    interior_knots;
-                                                   order, 
+                                                   order,
                                                    intercept,
-                                                   df, 
+                                                   df,
                                                    knots)
     spline = BSplineBasis(boundary_knots, interior_knots, order, intercept)
     function eval(x::Array{T,1}; ders::Int=0)

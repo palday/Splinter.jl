@@ -83,27 +83,27 @@ julia> spline(0.0:0.2:1.0)
  -0.142857  0.428571   0.714286
 ```
 """
-function NSplineBasis(x::AbstractVector{T};              
+function NSplineBasis(x::AbstractVector{T};
                       boundary_knots::Union{Tuple{T,T},Nothing}=nothing,
                       interior_knots::Union{AbstractVector{T},Nothing}=nothing,
                       order::Int=4,
                       intercept::Bool=false,
                       df::Int=order - 3 + Int(intercept),
                       knots::Union{AbstractVector{T},Nothing}=nothing) where {T<:Real}
-    boundary_knots, interior_knots = spline_args(x, 
+    boundary_knots, interior_knots = spline_args(x,
                                                  boundary_knots,
                                                  interior_knots;
-                                                 order, 
+                                                 order,
                                                  intercept,
                                                  df,
-                                                 knots, 
+                                                 knots,
                                                  knots_offset=2)
     spline = NSplineBasis(boundary_knots, interior_knots, order, intercept)
     return spline
 end
 
-function (spline::NSplineBasis{T})(x::AbstractVector; 
-                                   derivs::Int=0, 
+function (spline::NSplineBasis{T})(x::AbstractVector;
+                                   derivs::Int=0,
                                    center::Union{Number,Nothing}=nothing) where {T}
     b = basis(spline, x, derivs)
     if !isnothing(center) && iszero(derivs)
@@ -149,12 +149,11 @@ julia> ns(0.0:0.2:1.0; df=3)
  -0.142857  0.428571   0.714286
 ```
 """
-function ns(x::AbstractVector{T};            
+function ns(x::AbstractVector{T};
             center::Union{T,Nothing}=nothing,
             derivs::Int=0,
             kwargs...) where {T<:Real}
-    
-     spline = NSplineBasis(x; kwargs...)
+    spline = NSplineBasis(x; kwargs...)
 
     return spline(x; center, derivs)
 end
