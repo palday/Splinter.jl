@@ -42,7 +42,7 @@ function SplineBasis(knots::Array{T,1}, order::Int=4) where {T<:Real}
     return SplineBasis(order,
                        length(knots),
                        length(knots) - order,
-                       zeroArray(knots))
+                       zeroIndexedArray(knots))
 end
 
 function basis(bs::SplineBasis{T}, x::T, ders::Int=0) where {T<:Real}
@@ -64,7 +64,7 @@ function basis(bs::SplineBasis{T}, x::T, ders::Int=0) where {T<:Real}
     m = ders
     hh = bs.order
     ell = find_interval(x)
-    result = zeroArray(zeros(T, 2 * k + 2))
+    result = zeroIndexedArray(zeros(T, 2 * k + 2))
     one = T(1)
     zero = T(0)
     result[0] = one
