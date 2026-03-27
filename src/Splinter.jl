@@ -16,5 +16,4 @@ include("nspline.jl")
 include("ispline.jl")
 include("mspline.jl")
 
-
 end # module

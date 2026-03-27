@@ -38,10 +38,13 @@ function is_(x::Array{T,1};
              intercept::Bool=false,
              df::Int=order + Int(intercept),
              knots::Union{Array{T,1},Nothing}=nothing) where {T<:Real}
-    (boundary_knots, interior_knots) = spline_args(x; boundary_knots=boundary_knots,
-                                                   interior_knots=interior_knots,
+    (boundary_knots, interior_knots) = spline_args(x, 
+                                                   boundary_knots,
+                                                   interior_knots;
                                                    order=order + 1,
-                                                   intercept=intercept, df=df, knots=knots)
+                                                   intercept, 
+                                                   df, 
+                                                   knots)
     spline = BSplineBasis(boundary_knots, interior_knots, order + 1, false)
     knots = parent(spline.spline_basis.knots)
     findj(x) = interior_knots == nothing ? (order + 1) : searchsortedlast(knots, x)

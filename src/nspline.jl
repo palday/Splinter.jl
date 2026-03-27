@@ -90,8 +90,9 @@ function NSplineBasis(x::AbstractVector{T};
                       intercept::Bool=false,
                       df::Int=order - 3 + Int(intercept),
                       knots::Union{AbstractVector{T},Nothing}=nothing) where {T<:Real}
-    boundary_knots, interior_knots = spline_args(x; boundary_knots,
-                                                 interior_knots,
+    boundary_knots, interior_knots = spline_args(x, 
+                                                 boundary_knots,
+                                                 interior_knots;
                                                  order, 
                                                  intercept,
                                                  df,
