@@ -12,6 +12,6 @@ makedocs(;
                 "api.md"])
 
 
-deploydocs(; repo="github.com/palday/Splinters.jl.git", 
+deploydocs(; repo="github.com/palday/Splinter.jl.git", 
            devbranch="main",
            push_preview=true)
