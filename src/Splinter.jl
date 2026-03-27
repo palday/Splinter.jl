@@ -6,7 +6,7 @@ using OffsetArrays
 using LinearAlgebra
 using Statistics
 
-zeroIndexedArray(a::Array{T}) where {T<:Real} = OffsetArray(a, (size(a) .* 0) .- 1)
+zeroIndexedArray(a::Array{T}) where {T<:Real} = OffsetArray(a, Tuple(fill(-1, ndims(a))))
 
 abstract type AbstractSplineBasis{T<:Real} end
 
