@@ -51,7 +51,6 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   docs:
-    name: Documentation
     runs-on: ubuntu-latest
     permissions:
       contents: write
