@@ -79,12 +79,12 @@ function ISplineBasis(x::AbstractVector{T};
                       df::Int=order + Int(intercept),
                       knots::Union{AbstractVector{T},Nothing}=nothing) where {T<:Real}
     boundary_knots, interior_knots = spline_args(x,
-                                                  boundary_knots,
-                                                  interior_knots;
-                                                  order=order + 1,
-                                                  intercept,
-                                                  df,
-                                                  knots)
+                                                 boundary_knots,
+                                                 interior_knots;
+                                                 order=order + 1,
+                                                 intercept,
+                                                 df,
+                                                 knots)
     spline = ISplineBasis(boundary_knots, interior_knots, order, intercept)
     return spline
 end

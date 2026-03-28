@@ -11,7 +11,7 @@ function MSplineBasis(boundary_knots::Tuple{T,T},
     knots = parent(spline.spline_basis.knots)
     trans_coef = map(1:(length(knots) - order)) do j
         denom = knots[j + order] - knots[j]
-        return denom > T(0) ? order / denom : T(0) 
+        return denom > T(0) ? order / denom : T(0)
     end
     if !intercept
         trans_coef = trans_coef[2:length(trans_coef)]
@@ -71,12 +71,12 @@ function MSplineBasis(x::AbstractVector{T};
                       df::Int=order - 1 + Int(intercept),
                       knots::Union{AbstractVector{T},Nothing}=nothing) where {T<:Real}
     boundary_knots, interior_knots = spline_args(x,
-                                                  boundary_knots,
-                                                  interior_knots;
-                                                  order,
-                                                  intercept,
-                                                  df,
-                                                  knots)
+                                                 boundary_knots,
+                                                 interior_knots;
+                                                 order,
+                                                 intercept,
+                                                 df,
+                                                 knots)
     spline = MSplineBasis(boundary_knots, interior_knots, order, intercept)
     return spline
 end
