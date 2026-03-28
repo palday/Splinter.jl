@@ -2,7 +2,7 @@ struct BSplineBasis{T<:Real} <: AbstractSplineBasis{T}
     spline_basis::SplineBasis{T}
     boundary_knots::Tuple{T,T}
     # TODO: refactor so that this can just be an empty vector
-    # instead of needing the sentinel nothing 
+    # instead of needing the sentinel nothing
     # maybe also a static array?
     interior_knots::Union{Array{T,1},Nothing}
     intercept::Bool
@@ -69,76 +69,86 @@ function basis(bs::BSplineBasis{T}, x::T, derivs::Int=0) where {T<:Real}
 end
 
 """
-    bs_(x :: Array{T,1}; <keyword arguments>) where T<:Real
+    BSplineBasis(x::AbstractVector{T};
+                 boundary_knots::Union{Tuple{T,T},Nothing}=nothing,
+                 interior_knots::Union{AbstractVector{T},Nothing}=nothing,
+                 order::Int=4,
+                 intercept::Bool=false,
+                 df::Int=order - 1 + Int(intercept),
+                 knots::Union{AbstractVector{T},Nothing}=nothing) where {T<:Real}
 
-Calculate a basis for B-splines and return a function with signature
-`(x:: Array{T,1}; ders :: Int = 0)` for evaluation of `ders`
-derivative for the splines at `x`.
+Calculate a basis for B-splines and return a callable type
+for evaluating points in that basis.
 
-The keyword arguments include one of:
-1. `df`, possibly in combination with `intercept`
-2. `boundary_knots` and `interior_knots`
-3. `knots`
+# Keyword Arguments
+- `boundary_knots`: boundary knots
+- `interior_knots`: interior knots
+- `order`: order of the spline
+- `intercept`: bool for whether to include an intercept
+- `df`: degrees of freedom
+- `knots`: full set of knots (excluding repeats)
 
-# Arguments
-- `boundary_knots :: Union{Tuple{T,T},Nothing} = nothing`: boundary knots
-- `interior_knots :: Union{Array{T,1},Nothing} = nothing`: interior knots
-- `order :: Int = 4`: order of the spline
-- `intercept :: Bool = false`: bool for whether to include an intercept
-- `df :: Int = order - 1 + Int(intercept)`: degrees of freedom
-- `knots :: Union{Array{T,1}, Nothing} = nothing`: full set of knots (excluding repeats)
-- `center :: Union{T,Nothing} = nothing)`: value to center the splines
+# Keyword Arguments of Returned Callable
+- `center`: value to center the splines
+- `derivs`: derivatives of the splines
 
 # Examples
+
 ```jldoctest
-julia> Splinter.bs_(collect(0.0:0.2:1.0), df=3)(collect(0.0:0.2:1.0))
+julia> spline = BSplineBasis(collect(0.0:0.2:1.0); df=3);
+julia> spline(collect(0.0:0.2:1.0))
 6×3 Array{Float64,2}:
- 0.0    0.0    0.0  
+ 0.0    0.0    0.0
  0.384  0.096  0.008
  0.432  0.288  0.064
  0.288  0.432  0.216
  0.096  0.384  0.512
- 0.0    0.0    1.0  
+ 0.0    0.0    1.0
 ```
 """
-function bs_(x::Array{T,1};
-             boundary_knots::Union{Tuple{T,T},Nothing}=nothing,
-             interior_knots::Union{Array{T,1},Nothing}=nothing,
-             order::Int=4,
-             intercept::Bool=false,
-             df::Int=order - 1 + Int(intercept),
-             knots::Union{Array{T,1},Nothing}=nothing,
-             center::Union{T,Nothing}=nothing) where {T<:Real}
-    (boundary_knots, interior_knots) = spline_args(x,
-                                                   boundary_knots,
-                                                   interior_knots;
-                                                   order,
-                                                   intercept,
-                                                   df,
-                                                   knots)
+function BSplineBasis(x::AbstractVector{T};
+                      boundary_knots::Union{Tuple{T,T},Nothing}=nothing,
+                      interior_knots::Union{AbstractVector{T},Nothing}=nothing,
+                      order::Int=4,
+                      intercept::Bool=false,
+                      df::Int=order - 1 + Int(intercept),
+                      knots::Union{AbstractVector{T},Nothing}=nothing) where {T<:Real}
+    boundary_knots, interior_knots = spline_args(x,
+                                                  boundary_knots,
+                                                  interior_knots;
+                                                  order,
+                                                  intercept,
+                                                  df,
+                                                  knots)
     spline = BSplineBasis(boundary_knots, interior_knots, order, intercept)
-    function eval(x::Array{T,1}; ders::Int=0)
-        b = basis(spline, x, ders)
-        if (center != nothing && ders == 0)
-            bc = basis(spline, center, ders)
-            for i in 1:size(b, 1)
-                b[i, :] -= bc
-            end
+    return spline
+end
+
+function (spline::BSplineBasis{T})(x::AbstractVector;
+                                   derivs::Int=0,
+                                   center::Union{Number,Nothing}=nothing) where {T}
+    b = basis(spline, x, derivs)
+    if !isnothing(center) && iszero(derivs)
+        bc = basis(spline, center, derivs)
+        for i in axes(b, 1)
+            b[i, :] -= bc
         end
-        return b
     end
-    return eval
+    return b
 end
 
 """
-    bs(x :: Array{T,1}; <keyword arguments>) where T<:Real
+   bs(x::AbstractVector{T};
+           center::Union{T,Nothing}=nothing,
+           derivs::Int=0,
+           kwargs...) where {T <: Real}
 
-Calculate a basis for B-splines. 
+Calculate a basis for B-splines and return `x` expressed in that basis.
 
-The keyword arguments include one of:
-1. `df`, possibly in combination with `intercept`
-2. `boundary_knots` and `interior_knots`
-3. `knots`
+# Keyword arguments
+- `center`: value to center the splines
+- `derivs`: derivatives of the splines
+- Further keyword arguments are passed to `BSplineBasis`.
 
 # Arguments
 - `boundary_knots :: Union{Tuple{T,T},Nothing} = nothing`: boundary knots
@@ -147,21 +157,23 @@ The keyword arguments include one of:
 - `intercept :: Bool = false`: bool for whether to include an intercept
 - `df :: Int = order - 1 + Int(intercept)`: degrees of freedom
 - `knots :: Union{Array{T,1}, Nothing} = nothing`: full set of knots (excluding repeats)
-- `center :: Union{T,Nothing} = nothing)`: value to center the splines
-- `ders :: Int = 0`: derivatives of the splines
 
 # Examples
 ```jldoctest
-julia> Splinter.bs(collect(0.0:0.2:1.0), df=3)
+julia> bs(collect(0.0:0.2:1.0), df=3)
 6×3 Array{Float64,2}:
- 0.0    0.0    0.0  
+ 0.0    0.0    0.0
  0.384  0.096  0.008
  0.432  0.288  0.064
  0.288  0.432  0.216
  0.096  0.384  0.512
- 0.0    0.0    1.0  
+ 0.0    0.0    1.0
 ```
 """
-function bs(x::Array{T,1}; ders::Int=0, kwargs...) where {T<:Real}
-    return bs_(x; kwargs...)(x; ders=ders)
+function bs(x::AbstractVector{T};
+            center::Union{T,Nothing}=nothing,
+            derivs::Int=0,
+            kwargs...) where {T<:Real}
+    spline = BSplineBasis(x; kwargs...)
+    return spline(x; center, derivs)
 end
