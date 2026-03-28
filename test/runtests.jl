@@ -4,5 +4,8 @@ include("set_up_tests.jl")
     Aqua.test_all(Splinter; ambiguities=false)
 end
 
-@testset "splines" include("splines.jl")
+@testset "bspline" include("bspline.jl")
+@testset "nspline" include("nspline.jl")
+@testset "ispline" include("ispline.jl")
+@testset "mspline" include("mspline.jl")
 @testset "StatsModels" include("statsmodels.jl")
