@@ -1,3 +1,73 @@
+struct BSplineBasis{T<:Real} <: AbstractSplineBasis{T}
+    spline_basis::SplineBasis{T}
+    boundary_knots::Tuple{T,T}
+    # TODO: refactor so that this can just be an empty vector
+    # instead of needing the sentinel nothing 
+    # maybe also a static array?
+    interior_knots::Union{Array{T,1},Nothing}
+    intercept::Bool
+    df::Int
+end
+
+function BSplineBasis(boundary_knots::Tuple{T,T},
+                      interior_knots::Union{Array{T,1},Nothing}=nothing,
+                      order::Int=4,
+                      intercept::Bool=false) where {T<:Real}
+    l_interior_knots = isnothing(interior_knots) ? 0 : length(interior_knots)
+    df = Int(intercept) + order - 1 + l_interior_knots
+    nknots = l_interior_knots + 2 * order
+
+    # knots are initialized as the boundary knots that they are closest to
+    # we start with the 'right' boundary to make the indexing logic easier
+    knots = fill(last(boundary_knots), nknots)
+    fill!(view(knots, 1:order), first(boundary_knots))
+
+    for i in 1:l_interior_knots
+        knots[i + order] = interior_knots[i]
+    end
+
+    return BSplineBasis(SplineBasis(knots, order),
+                        boundary_knots, interior_knots,
+                        intercept, df)
+end
+
+function basis(bs::BSplineBasis{T}, x::T, derivs::Int=0) where {T<:Real}
+    if bs.boundary_knots[1] <= x <= bs.boundary_knots[2]
+        vec = basis(bs.spline_basis, x, derivs)
+    else # outside of the boundary knots
+        if x < bs.boundary_knots[1]
+            k_pivot = T(0.75) * bs.boundary_knots[1] +
+                      T(0.25) * bs.spline_basis.knots[bs.spline_basis.order + 1 - 1] # 0-based
+        else
+            k_pivot = T(0.75) * bs.boundary_knots[2] +
+                      T(0.25) *
+                      bs.spline_basis.knots[length(bs.spline_basis.knots) - bs.spline_basis.order - 1 - 1] # 0-based
+        end
+        delta = x - k_pivot
+        if derivs == 0
+            vec = basis(bs.spline_basis, k_pivot, 0) +
+                  basis(bs.spline_basis, k_pivot, 1) * delta +
+                  basis(bs.spline_basis, k_pivot, 2) * delta * delta / T(2.0) +
+                  basis(bs.spline_basis, k_pivot, 3) * delta * delta * delta / T(6.0)
+        elseif derivs == 1
+            vec = splines.basis(bs.spline_basis, k_pivot, 1) +
+                  splines.basis(bs.spline_basis, k_pivot, 2) * delta +
+                  splines.basis(bs.spline_basis, k_pivot, 3) * delta * delta / T(2.0)
+        elseif derivs == 2
+            vec = splines.basis(bs.spline_basis, k_pivot, 2) +
+                  splines.basis(bs.spline_basis, k_pivot, 3) * delta
+        elseif derivs == 3
+            vec = splines.basis(bs.spline_basis, k_pivot, 3)
+        else
+            vec = k_pivot .* T(0)
+        end
+    end
+    if !bs.intercept
+        vec = vec[2:length(vec)]
+    end
+    return vec
+end
+
 """
     bs_(x :: Array{T,1}; <keyword arguments>) where T<:Real
 
