@@ -2,7 +2,6 @@ module Splinter
 
 export ns, NSplineBasis, bs, BSplineBasis, is, ISplineBasis, ms, MSplineBasis, basis
 
-using OffsetArrays
 using LinearAlgebra
 using Statistics
 
