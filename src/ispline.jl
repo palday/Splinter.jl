@@ -50,7 +50,7 @@ for evaluating points in that basis.
 - `boundary_knots`: boundary knots
 - `interior_knots`: interior knots
 - `order`: order of the spline
-- `intercept`: bool for whether to include an intercept (column of ones). This behaviour is different to the Splinter package from R, where intercept=FALSE will drop the first spline term.
+- `intercept`: bool for whether to include an intercept (column of ones). This behaviour is different to the splines2 package from R, where intercept=FALSE will drop the first spline term.
 - `df`: degrees of freedom
 - `knots`: full set of knots (excluding repeats)
 
@@ -81,7 +81,7 @@ function ISplineBasis(x::AbstractVector{T};
     boundary_knots, interior_knots = spline_args(x,
                                                  boundary_knots,
                                                  interior_knots;
-                                                 order=order + 1,
+                                                 order=order,
                                                  intercept,
                                                  df,
                                                  knots)
