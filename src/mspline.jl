@@ -21,7 +21,8 @@ end
 
 function basis(ms::MSplineBasis{T}, x::T, derivs::Int=0) where {T<:Real}
     vec = basis(ms.b_spline_basis, x, derivs)
-    return vec .* ms.trans_coef
+    vec .*= ms.trans_coef
+    return vec
 end
 
 """
