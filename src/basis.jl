@@ -59,7 +59,7 @@ function basis(bs::SplineBasis{T}, x::T, derivs::Int=0) where {T<:Real}
         end
     end
     v = zeros(T, bs.ncoef)
-    v[(ell - k):(ell)] = result[1:(k + 1)]
+    copyto!(view(v, (ell - k):(ell)), view(result, 1:(k + 1)))
     return v
 end
 
